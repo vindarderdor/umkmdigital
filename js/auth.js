@@ -1,50 +1,60 @@
 /**
- * Authentication and Session Management
+ * Authentication and Session Management using Supabase
  */
 
-const AUTH_KEY = 'umkm_admin_session';
-
-function checkAuth() {
-    const session = sessionStorage.getItem(AUTH_KEY);
+async function checkAuth() {
+    const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
         window.location.href = '../login.html';
     }
 }
 
-function checkLogin() {
-    const session = sessionStorage.getItem(AUTH_KEY);
+async function checkLogin() {
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
         window.location.href = 'admin/dashboard.html';
     }
 }
 
-function login(username, password) {
-    // Default Credentials based on requirements
-    const defaultUser = 'admin';
-    const defaultPass = 'kknbbk2026';
-
-    if (username === defaultUser && password === defaultPass) {
-        sessionStorage.setItem(AUTH_KEY, JSON.stringify({
-            username: username,
-            loginAt: new Date().getTime()
-        }));
+async function login(email, password) {
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+        if (error) throw error;
         return true;
+    } catch (error) {
+        console.error('Login error:', error.message);
+        return false;
     }
-    return false;
 }
 
-function logout() {
-    sessionStorage.removeItem(AUTH_KEY);
-    window.location.href = '../login.html';
+async function logout() {
+    try {
+        await supabase.auth.signOut();
+        window.location.href = '../login.html';
+    } catch (error) {
+        console.error('Logout error:', error.message);
+    }
 }
 
-// Attach logout event if logout button exists
+// Setup auth state listener
+supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+        const path = window.location.pathname;
+        if (path.includes('/admin/')) {
+            window.location.href = '../login.html';
+        }
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
+        logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            logout();
+            await logout();
         });
     }
 });

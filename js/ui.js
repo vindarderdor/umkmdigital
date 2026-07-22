@@ -208,3 +208,24 @@ document.addEventListener('click', (e) => {
         document.body.style.overflow = '';
     }
 });
+
+function showLoading() {
+    let loader = document.getElementById('crudLoader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'crudLoader';
+        loader.className = 'loader-wrapper';
+        loader.innerHTML = '<div class="loader"></div>';
+        document.body.appendChild(loader);
+    }
+    loader.style.display = 'flex';
+    loader.style.opacity = '1';
+}
+
+function hideLoading() {
+    const loader = document.getElementById('crudLoader');
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 300);
+    }
+}

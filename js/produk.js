@@ -1,20 +1,105 @@
 /**
- * Products Page Logic
+ * Products Page Logic & Supabase CRUD
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+// --- Supabase Data Fetchers & Savers ---
+async function getProducts() {
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching products:', error.message);
+        showToast('Gagal memuat data produk', 'error');
+        return [];
+    }
+}
+
+async function getProductsByUmkm(umkmId) {
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('umkm_id', umkmId)
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching products by UMKM:', error.message);
+        return [];
+    }
+}
+
+async function insertProduct(productData) {
+    try {
+        showLoading();
+        const { error } = await supabase.from('products').insert([productData]);
+        if (error) throw error;
+        showToast('Berhasil menambahkan produk', 'success');
+    } catch (error) {
+        console.error('Error inserting product:', error.message);
+        showToast('Gagal menambahkan produk', 'error');
+        throw error;
+    } finally {
+        hideLoading();
+    }
+}
+
+async function updateProduct(id, productData) {
+    try {
+        showLoading();
+        const { error } = await supabase
+            .from('products')
+            .update(productData)
+            .eq('id', id);
+        if (error) throw error;
+        showToast('Berhasil mengubah produk', 'success');
+    } catch (error) {
+        console.error('Error updating product:', error.message);
+        showToast('Gagal mengubah produk', 'error');
+        throw error;
+    } finally {
+        hideLoading();
+    }
+}
+
+async function deleteProduct(id) {
+    try {
+        showLoading();
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        showToast('Berhasil menghapus produk', 'success');
+    } catch (error) {
+        console.error('Error deleting product:', error.message);
+        showToast('Gagal menghapus produk', 'error');
+        throw error;
+    } finally {
+        hideLoading();
+    }
+}
+
+// --- Public Page UI Logic ---
+document.addEventListener('DOMContentLoaded', async () => {
     const productList = document.getElementById('productList');
     if (!productList) return;
 
     const searchInput = document.getElementById('searchProduct');
     const sortSelect = document.getElementById('sortProduct');
     
-    let allProducts = getProducts();
-    let allUMKM = getUMKM();
+    showLoading();
+    let allProducts = await getProducts();
+    let allUMKM = await getUMKM();
+    hideLoading();
     
     // Map UMKM names to products for easier display and search
     let enrichedProducts = allProducts.map(p => {
-        const umkm = allUMKM.find(u => u.id == p.umkmId);
+        const umkm = allUMKM.find(u => u.id == p.umkm_id);
         return {
             ...p,
             umkmName: umkm ? umkm.name : 'Unknown'
@@ -46,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             card.innerHTML = `
                 <div class="card-img-wrapper">
-                    <img src="${item.image}" alt="${item.name}" class="card-img" loading="lazy">
+                    <img src="${item.image || 'https://via.placeholder.com/800'}" alt="${item.name}" class="card-img" loading="lazy">
                 </div>
                 <div class="card-body">
                     <small class="text-primary mb-2 block" style="font-weight: 600;"><i class="fas fa-store-alt"></i> ${item.umkmName}</small>
@@ -54,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-main font-bold mb-4" style="font-size: 1.25rem;">${formattedPrice}</p>
                     
                     <div style="margin-top: auto;">
-                        <a href="detail.html?id=${item.umkmId}" class="btn btn-primary" style="width: 100%; border-radius: var(--radius-sm); padding: 0.5rem; font-size: 0.875rem;">
+                        <a href="detail.html?id=${item.umkm_id}" class="btn btn-primary" style="width: 100%; border-radius: var(--radius-sm); padding: 0.5rem; font-size: 0.875rem;">
                             Beli di Toko <i class="fas fa-shopping-bag"></i>
                         </a>
                     </div>
@@ -89,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (sortSelect.value === 'name-desc') {
                 filtered.sort((a, b) => b.name.localeCompare(a.name));
             } else {
-                // newest (default order)
+                // newest (default order - already sorted by API)
             }
         }
 
