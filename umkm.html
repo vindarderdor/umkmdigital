@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar UMKM | UMKM Gundih Digital</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="pageLoader" class="loader-wrapper"><div class="loader"></div></div>
+
+    <nav class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-store"></i> Gundih Digital</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="umkm.html" class="nav-link active">Daftar UMKM</a></li>
+                <li><a href="produk.html" class="nav-link">Katalog</a></li>
+                <li><a href="dokumentasi.html" class="nav-link">Dokumentasi</a></li>
+                <li><button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="section" style="padding-top: 130px; min-height: 80vh; background: var(--bg-color-alt);">
+        <div class="pattern-dots"></div>
+        <div class="container relative z-10">
+            <div class="section-title reveal">
+                <h2>Direktori UMKM</h2>
+                <p>Jelajahi berbagai potensi usaha lokal unggulan di Kelurahan Gundih</p>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="glass-card reveal mb-4" style="margin-bottom: 3rem; padding: 1.5rem 2rem;">
+                <div class="form-group mb-0 relative">
+                    <i class="fas fa-search" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                    <input type="text" id="searchUMKM" class="form-control" placeholder="Cari berdasarkan nama, kategori, atau pemilik usaha..." style="padding-left: 3rem; border-radius: var(--radius-full);">
+                </div>
+                
+                <div class="flex gap-2 mt-4 justify-center" style="flex-wrap: wrap;" id="filterContainer">
+                    <button class="btn btn-primary filter-btn" data-filter="Semua" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">Semua Kategori</button>
+                    <button class="btn btn-outline filter-btn" data-filter="Kuliner" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;"><i class="fas fa-utensils"></i> Kuliner</button>
+                    <button class="btn btn-outline filter-btn" data-filter="Fashion" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;"><i class="fas fa-tshirt"></i> Fashion</button>
+                    <button class="btn btn-outline filter-btn" data-filter="Kerajinan" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;"><i class="fas fa-paint-brush"></i> Kerajinan</button>
+                    <button class="btn btn-outline filter-btn" data-filter="Jasa" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;"><i class="fas fa-tools"></i> Jasa</button>
+                    <button class="btn btn-outline filter-btn" data-filter="Sembako" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;"><i class="fas fa-shopping-basket"></i> Sembako</button>
+                </div>
+            </div>
+
+            <!-- UMKM Grid -->
+            <div id="umkmList" class="grid grid-cols-3 gap-4">
+                <!-- Data akan dirender oleh JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 0;">
+        <div class="container">
+            <div class="footer-bottom" style="padding-top: 0; border: none;">
+                <p>&copy; 2026 KKN BBK 8 Universitas Airlangga Kelompok Gundih 1.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button id="scrollToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="js/database.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/umkm.js"></script>
+</body>
+</html>

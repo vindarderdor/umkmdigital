@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi | UMKM Gundih Digital</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="pageLoader" class="loader-wrapper"><div class="loader"></div></div>
+
+    <nav class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-store"></i> Gundih Digital</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="umkm.html" class="nav-link">Daftar UMKM</a></li>
+                <li><a href="produk.html" class="nav-link">Katalog</a></li>
+                <li><a href="dokumentasi.html" class="nav-link active">Dokumentasi</a></li>
+                <li><button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="section" style="padding-top: 130px; min-height: 80vh; background: var(--bg-color-alt);">
+        <div class="pattern-dots"></div>
+        <div class="container relative z-10">
+            <div class="section-title reveal">
+                <h2>Galeri Dokumentasi</h2>
+                <p>Rekam jejak kegiatan KKN BBK 8 Universitas Airlangga bersama UMKM Kelurahan Gundih</p>
+            </div>
+
+            <div id="docsList" class="grid grid-cols-3 gap-4">
+                <!-- Loaded by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 0;">
+        <div class="container">
+            <div class="footer-bottom" style="padding-top: 0; border: none;">
+                <p>&copy; 2026 KKN BBK 8 Universitas Airlangga Kelompok Gundih 1.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button id="scrollToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="js/database.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const docsList = document.getElementById('docsList');
+            const docs = getDocs();
+
+            if (docs.length === 0) {
+                docsList.innerHTML = `<div class="col-span-full text-center py-5"><p class="text-muted">Belum ada dokumentasi.</p></div>`;
+                return;
+            }
+
+            docs.forEach((doc, index) => {
+                const delay = (index % 5) + 1;
+                const card = document.createElement('div');
+                card.className = `card reveal stagger-${delay}`;
+                
+                // Format Date
+                const dateObj = new Date(doc.date);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = isNaN(dateObj) ? doc.date : dateObj.toLocaleDateString('id-ID', options);
+
+                card.innerHTML = `
+                    <div class="card-img-wrapper" style="height: 250px;">
+                        <img src="${doc.image}" alt="${doc.title}" class="card-img">
+                    </div>
+                    <div class="card-body" style="padding: 1.25rem;">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 600;">${doc.title}</h4>
+                        <small class="text-muted flex items-center gap-2"><i class="fas fa-calendar-alt text-primary"></i> ${formattedDate}</small>
+                    </div>
+                `;
+                docsList.appendChild(card);
+            });
+            
+            setTimeout(() => { if (typeof initScrollReveal === 'function') initScrollReveal(); }, 100);
+        });
+    </script>
+</body>
+</html>

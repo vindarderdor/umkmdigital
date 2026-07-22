@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail UMKM | UMKM Gundih Digital</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="pageLoader" class="loader-wrapper"><div class="loader"></div></div>
+
+    <nav class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo"><i class="fas fa-store"></i> Gundih Digital</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="umkm.html" class="nav-link">Daftar UMKM</a></li>
+                <li><a href="produk.html" class="nav-link">Katalog</a></li>
+                <li><a href="dokumentasi.html" class="nav-link">Dokumentasi</a></li>
+                <li><button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Detail Section -->
+    <section class="section" style="padding-top: 120px; background: var(--bg-color-alt); min-height: 100vh;">
+        <div class="pattern-dots"></div>
+        <div class="container relative z-10">
+            <div id="detailContainer" class="reveal">
+                <!-- Data will be loaded here -->
+                <div class="text-center py-5 skeleton" style="height: 400px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 0;">
+        <div class="container">
+            <div class="footer-bottom" style="padding-top: 0; border: none;">
+                <p>&copy; 2026 KKN BBK 8 Universitas Airlangga Kelompok Gundih 1.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button id="scrollToTop" class="back-to-top"><i class="fas fa-arrow-up"></i></button>
+
+    <script src="js/database.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/maps.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('detailContainer');
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                container.innerHTML = `<div class="text-center py-5"><h4>Data tidak ditemukan.</h4><a href="umkm.html" class="btn btn-primary mt-3">Kembali</a></div>`;
+                return;
+            }
+
+            const umkm = getUMKMById(id);
+            if (!umkm) {
+                container.innerHTML = `<div class="text-center py-5"><h4>Data tidak ditemukan.</h4><a href="umkm.html" class="btn btn-primary mt-3">Kembali</a></div>`;
+                return;
+            }
+
+            const products = getProductsByUmkm(id);
+            let productsHTML = '';
+            
+            if (products.length > 0) {
+                productsHTML = `
+                    <div class="glass-card mt-4" style="padding: 2rem;">
+                        <h3 class="mb-4">Katalog Produk</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            ${products.map((p, idx) => `
+                                <div class="card reveal stagger-${(idx % 5) + 1}">
+                                    <div class="card-img-wrapper" style="height: 150px;">
+                                        <img src="${p.image}" alt="${p.name}" class="card-img">
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <h4 class="mb-1" style="font-size: 1.1rem;">${p.name}</h4>
+                                        <p class="text-accent font-bold">Rp ${p.price.toLocaleString('id-ID')}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                productsHTML = `
+                    <div class="glass-card mt-4 text-center py-5">
+                        <i class="fas fa-box-open text-muted mb-3" style="font-size: 3rem;"></i>
+                        <p class="text-muted">Belum ada produk yang ditambahkan.</p>
+                    </div>`;
+            }
+
+            container.innerHTML = `
+                <!-- Breadcrumb -->
+                <div class="mb-4 text-muted" style="font-size: 0.875rem;">
+                    <a href="index.html" class="hover:text-primary">Beranda</a> &gt; 
+                    <a href="umkm.html" class="hover:text-primary">UMKM</a> &gt; 
+                    <span class="text-main font-medium">${umkm.name}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6" style="grid-template-columns: 1fr 1fr; @media(max-width: 992px){grid-template-columns: 1fr;}">
+                    <!-- Kiri: Visuals -->
+                    <div>
+                        <div class="card relative" style="border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg);">
+                            <img src="${umkm.image}" alt="${umkm.name}" style="width: 100%; object-fit: cover; max-height: 450px; border-radius: 0;">
+                            <div class="card-badge" style="top: auto; bottom: 1.5rem; right: 1.5rem; display: flex; gap: 0.5rem;">
+                                <span class="badge badge-primary glass"><i class="fas fa-tag"></i> ${umkm.category}</span>
+                            </div>
+                        </div>
+                        
+                        ${productsHTML}
+                    </div>
+                    
+                    <!-- Kanan: Information -->
+                    <div>
+                        <div class="glass-card mb-4" style="padding: 2.5rem;">
+                            <div class="flex justify-between items-start mb-3">
+                                <h1 class="mb-0" style="font-size: 2.5rem;">${umkm.name}</h1>
+                                <span class="badge badge-accent" style="font-size: 1rem;"><i class="fas fa-star"></i> 4.8</span>
+                            </div>
+                            
+                            <p class="text-muted mb-4 pb-4 border-bottom" style="font-size: 1.1rem; line-height: 1.8;">
+                                ${umkm.desc}
+                            </p>
+                            
+                            <h4 class="mb-3">Informasi Usaha</h4>
+                            
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <small class="text-muted block">Pemilik Usaha</small>
+                                    <strong class="text-main">${umkm.owner}</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <small class="text-muted block">Jam Operasional</small>
+                                    <strong class="text-main">${umkm.hours}</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div>
+                                    <small class="text-muted block">Alamat Lengkap</small>
+                                    <strong class="text-main">${umkm.address} (RT ${umkm.rt}/RW ${umkm.rw})</strong>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div>
+                                    <small class="text-muted block">Tahun Berdiri</small>
+                                    <strong class="text-main">${umkm.year || 'Tidak diketahui'}</strong>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 mt-5 flex-wrap">
+                                <a href="https://wa.me/${umkm.wa}" target="_blank" class="btn btn-primary" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.4);">
+                                    <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+                                </a>
+                                <a href="#" id="btnOpenMaps" target="_blank" class="btn btn-outline" style="flex: 1; min-width: 200px;">
+                                    <i class="fas fa-directions"></i> Petunjuk Arah
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Maps -->
+                        <div class="glass-card reveal">
+                            <h4 class="mb-3">Lokasi pada Peta</h4>
+                            <div id="mapContainer" style="width: 100%; height: 300px; border-radius: var(--radius-md); overflow: hidden; background: var(--border);">
+                                <!-- Maps loaded via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Re-trigger maps
+            const mapContainer = document.getElementById('mapContainer');
+            if (umkm.lat && umkm.lng) {
+                const embedUrl = `https://maps.google.com/maps?q=${umkm.lat},${umkm.lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+                mapContainer.innerHTML = `<iframe width="100%" height="100%" frameborder="0" scrolling="no" src="${embedUrl}"></iframe>`;
+                document.getElementById('btnOpenMaps').href = `https://www.google.com/maps/search/?api=1&query=${umkm.lat},${umkm.lng}`;
+            } else {
+                mapContainer.innerHTML = `<div class="flex items-center justify-center h-full text-muted"><p>Lokasi Peta tidak tersedia</p></div>`;
+                document.getElementById('btnOpenMaps').style.display = 'none';
+            }
+            
+            // Change grid behavior for mobile inline
+            if(window.innerWidth < 992) {
+                container.querySelector('.grid').style.gridTemplateColumns = '1fr';
+            }
+            
+            // Re-trigger animations
+            setTimeout(() => { if (typeof initScrollReveal === 'function') initScrollReveal(); }, 100);
+        });
+    </script>
+</body>
+</html>

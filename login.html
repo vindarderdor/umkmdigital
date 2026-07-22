@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin | UMKM Gundih Digital</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-color), #e2e8f0);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="pageLoader" class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="login-page">
+        <div class="glass-card login-card fade-in">
+            <div class="login-logo">
+                <i class="fas fa-user-shield"></i>
+                <h2>Admin Gundih</h2>
+                <p class="text-muted">Gundih Digital UMKM</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" id="username" class="form-control" style="padding-left: 2.5rem;" required
+                            placeholder="username">
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock"
+                            style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="password" id="password" class="form-control" style="padding-left: 2.5rem;" required
+                            placeholder="password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Masuk <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="index.html" class="text-muted" style="font-size: 0.9rem;"><i class="fas fa-arrow-left"></i>
+                    Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLogin(); // If already logged in, redirect to dashboard
+
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const user = document.getElementById('username').value;
+                    const pass = document.getElementById('password').value;
+
+                    if (login(user, pass)) {
+                        showToast('Login Berhasil!', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'admin/dashboard.html';
+                        }, 1000);
+                    } else {
+                        showToast('Username atau Password salah!', 'error');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
