@@ -118,10 +118,16 @@ document.addEventListener('DOMContentLoaded', () => {
             umkmForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('umkmId').value;
+                const selectedCats = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value).join(', ');
+                if (!selectedCats) {
+                    showToast('Pilih minimal 1 kategori!', 'error');
+                    return;
+                }
+
                 const payload = {
                     name: document.getElementById('name').value,
                     owner: document.getElementById('owner').value,
-                    category: document.getElementById('category').value,
+                    category: selectedCats,
                     desc: document.getElementById('desc').value,
                     phone: document.getElementById('phone').value,
                     wa: document.getElementById('wa').value,
@@ -129,9 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     address: document.getElementById('address').value,
                     rt: document.getElementById('rt').value,
                     rw: document.getElementById('rw').value,
-                    lat: document.getElementById('lat').value,
-                    lng: document.getElementById('lng').value,
-                    year: document.getElementById('year').value
+                    lat: document.getElementById('lat').value || null,
+                    lng: document.getElementById('lng').value || null,
+                    year: document.getElementById('year').value || null
                 };
 
                 try {
@@ -156,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadUMKMTable();
                 } catch (err) {
                     console.error('Error saving UMKM:', err);
+                    showToast('Gagal menyimpan UMKM: ' + err.message, 'error');
+                    hideLoading();
                 }
             });
         }
@@ -167,7 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('umkmId').value = item.id;
                 document.getElementById('name').value = item.name;
                 document.getElementById('owner').value = item.owner;
-                document.getElementById('category').value = item.category;
+                
+                // Set Categories
+                document.querySelectorAll('input[name="category"]').forEach(cb => cb.checked = false);
+                if (item.category) {
+                    const cats = item.category.split(',').map(c => c.trim());
+                    document.querySelectorAll('input[name="category"]').forEach(cb => {
+                        if (cats.includes(cb.value)) cb.checked = true;
+                    });
+                }
+
                 document.getElementById('desc').value = item.desc || '';
                 document.getElementById('phone').value = item.phone || '';
                 document.getElementById('wa').value = item.wa || '';
@@ -215,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('modalTitle').innerText = 'Tambah UMKM Baru';
                 if(umkmForm) umkmForm.reset();
                 document.getElementById('umkmId').value = '';
+                document.querySelectorAll('input[name="category"]').forEach(cb => cb.checked = false);
                 resetImagePreview();
                 openModal('umkmModal');
             });
@@ -292,9 +310,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const id = document.getElementById('productId').value;
                 const payload = {
-                    umkm_id: document.getElementById('umkmSelect').value,
+                    umkm_id: parseInt(document.getElementById('umkmSelect').value) || null,
                     name: document.getElementById('name').value,
-                    price: document.getElementById('price').value
+                    price: parseFloat(document.getElementById('price').value) || 0
                 };
 
                 try {
@@ -319,6 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadProductTable();
                 } catch(err) {
                     console.error('Error saving product:', err);
+                    showToast('Gagal menyimpan produk: ' + err.message, 'error');
+                    hideLoading();
                 }
             });
         }
@@ -443,6 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadDocTable();
                 } catch(err) {
                     console.error('Error saving doc:', err);
+                    showToast('Gagal menyimpan dokumentasi: ' + err.message, 'error');
+                    hideLoading();
                 }
             });
         }

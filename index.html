@@ -146,19 +146,19 @@
                 <div class="stat-box reveal stagger-1">
                     <div class="stat-icon" style="background: rgba(0, 87, 217, 0.1); color: var(--primary);"><i
                             class="fas fa-store-alt"></i></div>
-                    <h3 class="counter-anim" data-target="50">0</h3>
+                    <h3 class="counter-anim" data-target="0" id="statUmkm">0</h3>
                     <p>UMKM Terdaftar</p>
                 </div>
                 <div class="stat-box reveal stagger-2">
                     <div class="stat-icon" style="background: rgba(0, 168, 107, 0.1); color: var(--secondary);"><i
                             class="fas fa-box-open"></i></div>
-                    <h3 class="counter-anim" data-target="120">0</h3>
+                    <h3 class="counter-anim" data-target="0" id="statProduk">0</h3>
                     <p>Produk Lokal</p>
                 </div>
                 <div class="stat-box reveal stagger-3">
                     <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--accent);"><i
                             class="fas fa-tags"></i></div>
-                    <h3 class="counter-anim" data-target="5">0</h3>
+                    <h3 class="counter-anim" data-target="0" id="statKategori">0</h3>
                     <p>Kategori Usaha</p>
                 </div>
                 <div class="stat-box reveal stagger-4">
@@ -220,8 +220,7 @@
             style="position: absolute; top: 0; right: 0; width: 300px; height: 100%; background: var(--primary); clip-path: polygon(100% 0, 100% 100%, 0 100%, 100% 0); opacity: 0.05;">
         </div>
         <div class="container relative z-10">
-            <div class="grid grid-cols-2 items-center gap-6"
-                style="grid-template-columns: 1fr 1fr; @media(max-width: 768px){grid-template-columns: 1fr;}">
+            <div class="grid grid-cols-2 items-center gap-6">
                 <div class="reveal-zoom">
                     <div class="grid grid-cols-2 gap-2">
                         <img src="wingko.jpg"
@@ -350,6 +349,49 @@
     <script src="js/dokumentasi.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/ui.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch real counts from Supabase
+                const { count: countUmkm } = await window.supabase.from('umkm').select('*', { count: 'exact', head: true });
+                const { count: countProduk } = await window.supabase.from('products').select('*', { count: 'exact', head: true });
+                
+                // Fetch unique categories
+                const { data: umkms } = await window.supabase.from('umkm').select('category');
+                const allCats = (umkms || []).flatMap(u => (u.category || '').split(',').map(c => c.trim()).filter(Boolean));
+                const uniqueCategories = new Set(allCats).size;
+
+                // Update data-target attributes
+                document.getElementById('statUmkm').setAttribute('data-target', countUmkm || 0);
+                document.getElementById('statProduk').setAttribute('data-target', countProduk || 0);
+                document.getElementById('statKategori').setAttribute('data-target', uniqueCategories || 0);
+                
+                // Function to run the counter animation dynamically
+                const runDynamicCounter = (el) => {
+                    const target = +el.getAttribute('data-target');
+                    const count = +el.innerText;
+                    const inc = target / 50;
+
+                    if (count < target) {
+                        el.innerText = Math.ceil(count + inc);
+                        setTimeout(() => runDynamicCounter(el), 20);
+                    } else {
+                        el.innerText = target;
+                    }
+                };
+
+                // Trigger animation manually just in case the element is already visible
+                ['statUmkm', 'statProduk', 'statKategori'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) runDynamicCounter(el);
+                });
+
+            } catch (error) {
+                console.error("Gagal mengambil data statistik realtime:", error);
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -86,6 +86,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/ui.js"></script>
     <script>
@@ -94,12 +96,14 @@
 
             const loginForm = document.getElementById('loginForm');
             if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
+                loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const user = document.getElementById('username').value;
                     const pass = document.getElementById('password').value;
 
-                    if (login(user, pass)) {
+                    // login adalah fungsi async dari auth.js, jadi harus di-await
+                    const success = await login(user, pass);
+                    if (success) {
                         showToast('Login Berhasil!', 'success');
                         setTimeout(() => {
                             window.location.href = 'admin/dashboard.html';

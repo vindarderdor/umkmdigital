@@ -154,7 +154,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Apply Category Filter
         if (currentFilter !== 'Semua') {
-            filtered = filtered.filter(item => item.category === currentFilter);
+            filtered = filtered.filter(item => {
+                if (!item.category) return false;
+                const cats = item.category.split(',').map(c => c.trim().toLowerCase());
+                return cats.includes(currentFilter.toLowerCase());
+            });
         }
 
         // Apply Search
