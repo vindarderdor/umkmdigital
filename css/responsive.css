@@ -27,7 +27,8 @@
   .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
   
   /* Topbar Mobile Optimizations */
-  .topbar-right .btn { display: none; } /* Hide 'Buka Website' button on very small screens to save space */
+  .topbar-right .btn { font-size: 0 !important; padding: 0.5rem !important; border-radius: 50% !important; border: none !important; background: transparent !important; }
+  .topbar-right .btn i { font-size: 1.25rem; margin: 0; }
   .admin-profile span { display: none; } /* Hide 'Halo, Admin' text, just show avatar */
   .admin-profile { padding: 0.25rem; border-radius: 50%; }
   
